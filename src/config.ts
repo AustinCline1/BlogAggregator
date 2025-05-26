@@ -8,12 +8,12 @@ export type Config = {
 }
 
 function validateConfig(rawConfig: any) {
-    if(!rawConfig.db_url || typeof rawConfig.db_url !== "string") {
+    /*if(!rawConfig.db_url || typeof rawConfig.db_url !== "string") {
         throw new Error("db_url is required");
     }
     if(!rawConfig.current_user_name || typeof rawConfig.current_user_name !== "string") {
         throw new Error("current_user_name is required");
-    }
+    }*/
     return  {
         dbUrl: rawConfig.db_url,
         currentUserName: rawConfig.current_user_name,
