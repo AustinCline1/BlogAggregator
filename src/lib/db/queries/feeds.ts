@@ -76,3 +76,13 @@ export async function getFeedFollowsForUser(userID: string){
 
     return result;
 }
+
+export async function markFeedFetched(feedID:string){
+    const result = await db.update(feeds).set({lastFetchAt: new Date()}).where(eq(feeds.id,feedID)).returning();
+    return firstOrUndefined(result);
+}
+
+export async function getNextFeedToFetch(){
+    const result = await db.select().from(feeds).orderBy(sql`${feeds.lastFetchAt} desc nulls first`).limit(1);
+    return firstOrUndefined(result);
+}

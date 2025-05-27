@@ -1,11 +1,70 @@
-﻿import {fetchFeed} from "../rss";
+﻿import { parseDuration } from "../lib/time";
+import {fetchFeed} from "../rss";
+import {getNextFeedToFetch, markFeedFetched} from "../lib/db/queries/feeds";
+import {Feed, NewPost} from "../lib/db/schema";
+import {createPost} from "../lib/db/queries/posts";
 
 export async function handlerRSS(cmdName:string, ...args: string[]) {
-    const feed = await fetchFeed("https://www.wagslane.dev/index.xml");
-    if (!feed) {
-        console.error("Failed to fetch feed");
-        process.exit(1);
+    if(args.length !== 1) {
+        throw new Error("Invalid number of arguments");
     }
-    const feedData = JSON.stringify(feed,null,2);
-    console.log(feedData);
+    const timeArg = args[0];
+    const timeBetweenRequests = parseDuration(timeArg);
+    if(!timeBetweenRequests) {
+        throw new Error("Invalid time between requests");
+    }
+
+    console.log(`Collecting feeds every ${timeArg}...`);
+
+    scrapeFeeds().catch(handleError);
+
+    const interval = setInterval(()=> {
+        scrapeFeeds().catch(handleError);
+    },timeBetweenRequests);
+
+    await new Promise<void>((resolve) => {
+        process.on("SIGINT", () => {
+            clearInterval(interval);
+            resolve();
+        });
+    })
+
+}
+
+async function scrapeFeeds(){
+    const feed = await getNextFeedToFetch()
+    if(!feed){
+        console.log("No feeds to fetch");
+        return;
+    }
+    console.log("Found a feed to fetch!");
+    scrapeFeed(feed);
+}
+
+async function scrapeFeed(feed: Feed) {
+    await markFeedFetched(feed.id);
+
+    const feedData = await fetchFeed(feed.url);
+    if(!feedData) {
+        throw new Error("Failed to fetch feed");
+    }
+    for(const item of feedData.channel.item){
+        console.log(`Found post: ${item.title}`);
+        const now = new Date();
+
+        await createPost({
+            url: item.link,
+            feedID: feed.id,
+            title: item.title,
+            description: item.description,
+            publishedAt: new Date(item.pubDate),
+            createdAt: now,
+            updatedAt: now,
+        }satisfies NewPost);
+    }
+    console.log(`Feed ${feed.name} collected, ${feedData?.channel?.item?.length} posts found`);
+}
+
+function handleError(err:unknown) {
+    console.error(err);
 }

@@ -5,6 +5,7 @@ import {handlerRSS} from "./commands/RSSCommands";
 import {handlerAddFeeds, handlerListFeeds} from "./commands/feedsCommands";
 import {handlerFollow, handlerListFeedFollows, handlerUnfollow} from "./commands/feed-followsCommands";
 import {middlewareLoggedIn} from "./middleware";
+import {handlerBrowse} from "./commands/browse";
 async function main() {
 
     //Create and register the commands
@@ -37,7 +38,8 @@ function registerCommands(commandRegistry: CommandRegistry){
     registerCommand(commandRegistry,"feeds", handlerListFeeds);
     registerCommand(commandRegistry,"follow", middlewareLoggedIn(handlerFollow));
     registerCommand(commandRegistry,"following", middlewareLoggedIn(handlerListFeedFollows));
-    registerCommand(commandRegistry,"unfollow",middlewareLoggedIn(handlerUnfollow))
+    registerCommand(commandRegistry,"unfollow",middlewareLoggedIn(handlerUnfollow));
+    registerCommand(commandRegistry,"browse", middlewareLoggedIn(handlerBrowse));
 }
 
 main();
