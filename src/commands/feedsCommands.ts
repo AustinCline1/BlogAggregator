@@ -1,5 +1,5 @@
 ﻿import { readConfig } from "../config";
-import {getUser} from "../lib/db/queries/users";
+import {getUserByName} from "../lib/db/queries/users";
 import {addFeed, getFeeds, getUserofFeed} from "../lib/db/queries/feeds";
 import {Feed, User} from "../lib/db/schema";
 
@@ -10,7 +10,7 @@ export async function handlerAddFeeds(cmdName:string, ...args:string[]) {
 
     try {
         const config = readConfig();
-        const user = await getUser(config.currentUserName);
+        const user = await getUserByName(config.currentUserName);
         if (!user) {
             throw new Error("Unknown user");
         }
@@ -50,8 +50,7 @@ export async function handlerListFeeds(cmdName:string, ...args:string[]) {
             console.log(id);
             throw new Error("Unknown user");
         }
-        console.log(`Name: ${feed.name}`);
-        console.log(`URL: ${feed.url}`);
-        console.log(`User: ${id.name}`);
+        printFeed(feed, id);
+        console.log("===================================================");
     }
 }

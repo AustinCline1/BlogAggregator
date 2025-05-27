@@ -1,5 +1,5 @@
 ﻿import {getLoggedInUser, setUser} from "../config";
-import {createUser,getUser,deleteUsers, getAllUsers} from "../lib/db/queries/users";
+import {createUser,getUserByName,deleteUsers, getAllUsers} from "../lib/db/queries/users";
 import {db} from "../lib/db";
 import {fetchFeed} from "../rss";
 
@@ -8,7 +8,7 @@ export async function handlerLogin(cmdName:string, ...args: string[]) {
         throw new Error("Invalid number of arguments");
     }
     try{
-        const user = await getUser(args[0]);
+        const user = await getUserByName(args[0]);
         if(!user) {
             throw new Error("Unknown user");
         }
