@@ -4,18 +4,12 @@ import {addFeed, createFeedFollow, getFeeds, getUserofFeed} from "../lib/db/quer
 import {Feed, User} from "../lib/db/schema";
 import {printFeedFollow} from "./feed-followsCommands";
 
-export async function handlerAddFeeds(cmdName:string, ...args:string[]) {
+export async function handlerAddFeeds(cmdName:string,user:User, ...args:string[]) {
     if (args.length !== 2) {
         throw new Error("Invalid number of arguments");
     }
 
     try {
-        const config = readConfig();
-        const user = await getUserByName(config.currentUserName);
-        if (!user) {
-            throw new Error("Unknown user");
-        }
-
         const feedName = args[0];
         const url = args[1];
 
@@ -44,8 +38,6 @@ function printFeed(feed: Feed, user: User) {
     console.log(`* URL: ${feed.url}`);
     console.log(`* User: ${user.name}`);
 }
-
-
 export async function handlerListFeeds(cmdName:string, ...args:string[]) {
     const feeds = await getFeeds();
     for(const feed of feeds) {

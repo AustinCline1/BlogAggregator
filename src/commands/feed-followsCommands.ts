@@ -1,20 +1,12 @@
 ﻿import { readConfig } from "../config";
 import { getUserByName } from "../lib/db/queries/users";
-import {createFeedFollow, getFeedByURL, getFeedFollowsForUser} from "../lib/db/queries/feeds";
+import {createFeedFollow, deleteFeedFollow, getFeedByURL, getFeedFollowsForUser} from "../lib/db/queries/feeds";
+import {User} from "../lib/db/schema";
 
-export async function handlerFollow(cmdName:string, ...args:string[]) {
+export async function handlerFollow(cmdName:string,user:User, ...args:string[]) {
     if (args.length !== 1) {
         throw new Error("Invalid number of arguments");
     }
-
-    const config = readConfig();
-    const user = await getUserByName(config.currentUserName);
-
-
-    if(!user) {
-        throw new Error("Unknown user");
-    }
-
     const feedURL = args[0];
     const feed = await getFeedByURL(feedURL);
     if(!feed) {
@@ -29,13 +21,24 @@ export async function handlerFollow(cmdName:string, ...args:string[]) {
     console.log("Feed follow created!");
     printFeedFollow(ffRow.userName,ffRow.feedName);
 }
+export async function handlerUnfollow(cmdName:string,user:User, ...args:string[]) {
 
-export async function handlerListFeedFollows(_: string) {
-    const config = readConfig();
-    const user = await getUserByName(config.currentUserName);
-    if(!user) {
-        throw new Error("Unknown user");
+    if (args.length !== 1) {
+        throw new Error("Invalid number of arguments");
     }
+    const feedURL = args[0];
+    const feed = await getFeedByURL(feedURL);
+    if(!feed) {
+        throw new Error("Unknown feed");
+    }
+    const result = await deleteFeedFollow(feed.id, user.id);
+    if(!result) {
+        throw new Error("Failed to delete feed follow");
+    }
+    console.log("Feed follow deleted!");
+}
+
+export async function handlerListFeedFollows(_: string,user:User) {
     const feedFollows = await getFeedFollowsForUser(user.id);
     if(feedFollows.length === 0) {
         console.log("No feed follows");
