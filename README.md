@@ -1,4 +1,4 @@
-﻿# Feed Follow Manager
+﻿# Gator Feed Follow Manager
 
 A command-line tool for managing RSS/Atom feed subscriptions. This application allows users to follow feeds and manage their feed subscriptions.
 
