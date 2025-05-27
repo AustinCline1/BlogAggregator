@@ -20,6 +20,11 @@ function validateConfig(rawConfig: any) {
     }
 
 }
+
+export function getLoggedInUser(){
+    const config = readConfig();
+    return config.currentUserName;
+}
 export function readConfig() {
     const configFilePath = getConfigFilePath();
     const data = fs.readFileSync(configFilePath,"utf-8");

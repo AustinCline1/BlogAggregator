@@ -1,5 +1,6 @@
-﻿import {setUser} from "./config";
-import {createUser,getUser} from "./lib/db/queries/users";
+﻿import {getLoggedInUser, setUser} from "./config";
+import {createUser,getUser,deleteUsers, getAllUsers} from "./lib/db/queries/users";
+import {db} from "./lib/db";
 
 export async function handlerLogin(cmdName:string, ...args: string[]) {
     if (args.length !== 1) {
@@ -38,6 +39,32 @@ export async function handlerRegister(cmdName:string, ...args: string[]) {
             process.exit(1);
         }
     }
+}
 
+export async function handlerReset(cmdName:string, ...args: string[]) {
+    try {
+        await deleteUsers();
+        console.log("Deleted all users");
+    }catch (e){
+        console.error(e);
+        process.exit(1);
+    }
+}
 
+export async function handlerList(cmdName:string, ...args: string[]) {
+
+    try {
+        const users = await getAllUsers();
+        const currentUser = getLoggedInUser();
+        for (const user of users) {
+            if(user.name === currentUser) {
+                console.log(`* ${user.name} (current)`);
+                continue;
+            }
+            console.log(`* ${user.name}`);
+        }
+    }catch (e) {
+        console.log(e);
+        process.exit(1);
+    }
 }
