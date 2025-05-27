@@ -1,6 +1,7 @@
-﻿import {getLoggedInUser, setUser} from "./config";
-import {createUser,getUser,deleteUsers, getAllUsers} from "./lib/db/queries/users";
-import {db} from "./lib/db";
+﻿import {getLoggedInUser, setUser} from "../config";
+import {createUser,getUser,deleteUsers, getAllUsers} from "../lib/db/queries/users";
+import {db} from "../lib/db";
+import {fetchFeed} from "../rss";
 
 export async function handlerLogin(cmdName:string, ...args: string[]) {
     if (args.length !== 1) {
@@ -68,3 +69,4 @@ export async function handlerList(cmdName:string, ...args: string[]) {
         process.exit(1);
     }
 }
+

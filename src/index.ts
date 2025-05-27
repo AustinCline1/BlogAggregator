@@ -1,6 +1,7 @@
 ﻿
 import {CommandHandler, CommandRegistry, registerCommand,runCommand} from "./command_handler";
-import {handlerLogin, handlerRegister,handlerReset,handlerList} from "./users";
+import {handlerLogin, handlerRegister,handlerReset,handlerList} from "./commands/usersCommands";
+import {handlerRSS} from "./commands/RSSCommands";
 async function main() {
 
     //Create and register the commands
@@ -28,6 +29,7 @@ function registerCommands(commandRegistry: CommandRegistry){
     registerCommand(commandRegistry,"register",handlerRegister);
     registerCommand(commandRegistry,"reset", handlerReset);
     registerCommand(commandRegistry,"users", handlerList);
+    registerCommand(commandRegistry,"agg", handlerRSS);
 }
 
 main();
