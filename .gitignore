@@ -1,5 +1,4 @@
 ﻿node_modules
 .nvmrc
 .idea
-lib
 drizzle.config.ts

@@ -1,7 +1,8 @@
 ﻿import { readConfig } from "../config";
 import {getUserByName} from "../lib/db/queries/users";
-import {addFeed, getFeeds, getUserofFeed} from "../lib/db/queries/feeds";
+import {addFeed, createFeedFollow, getFeeds, getUserofFeed} from "../lib/db/queries/feeds";
 import {Feed, User} from "../lib/db/schema";
+import {printFeedFollow} from "./feed-followsCommands";
 
 export async function handlerAddFeeds(cmdName:string, ...args:string[]) {
     if (args.length !== 2) {
@@ -22,6 +23,9 @@ export async function handlerAddFeeds(cmdName:string, ...args:string[]) {
         if (!feed) {
             throw new Error("Failed to add feed");
         }
+        const feedFollow = await createFeedFollow(feed.id, user.id);
+
+        printFeedFollow(user.name, feed.name);
 
         console.log("Feed created successfully:");
         printFeed(feed, user);
@@ -54,3 +58,5 @@ export async function handlerListFeeds(cmdName:string, ...args:string[]) {
         console.log("===================================================");
     }
 }
+
+
